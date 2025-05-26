@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: SettingsManager
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.christiandellisanti.uk/realms/measurestream
+          #issuer-uri: http://keycloak.local:8090/realms/measurestream
+
+  kafka:
+    bootstrap-servers: kafka:29092
+    consumer:
+      group-id: measurestream
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
