@@ -28,3 +28,6 @@ mqtt:
   username: ${MQTT_USERNAME}
   password: ${MQTT_PASSWORD}
   client-id: spring-backend
+
+server:
+  port: 8080
