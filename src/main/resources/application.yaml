@@ -24,7 +24,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 mqtt:
-  broker: tcp://localhost:1883
+  broker: tcp://mosquitto:1883
   username: ${MQTT_USERNAME}
   password: ${MQTT_PASSWORD}
   client-id: spring-backend
