@@ -3,16 +3,13 @@ package measuremanager.settingsmanager.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.mqtt.MqttService
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/API/command")
 class CommandController( private val mq: MqttService) {
 
-    @PostMapping("/{muid}","/{muid}")
+    @GetMapping("/{muid}","/{muid}")
     fun start(@PathVariable muid : Long){
         val c = CommandDTO(
             commandId = 1 ,
