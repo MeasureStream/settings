@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/API/command")
 class CommandController( private val mq: MqttService) {
 
-    @GetMapping("/{muid}","/{muid}")
+    @GetMapping("/start/{muid}","/start/{muid}/")
     fun start(@PathVariable muid : Long){
         val c = CommandDTO(
             commandId = 1 ,
@@ -25,6 +25,23 @@ class CommandController( private val mq: MqttService) {
         val jsonString = mapper.writeValueAsString(c)
         mq.sendCommandToNode(jsonString)
 
+    }
+
+    @GetMapping("/stop/{muid}","/stop/{muid}")
+    fun stop(@PathVariable muid : Long){
+        val c = CommandDTO(
+            commandId = 1 ,
+            gateway = 1,
+            cu = 1  ,
+            mu = 1,
+            type = "stop",
+            cuSettingDTO = null,
+            muSettingDTO = null,
+        )
+        val mapper = jacksonObjectMapper()
+
+        val jsonString = mapper.writeValueAsString(c)
+        mq.sendCommandToNode(jsonString)
 
     }
 }

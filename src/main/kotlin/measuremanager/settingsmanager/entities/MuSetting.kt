@@ -13,4 +13,7 @@ class MuSetting {
 
     @ManyToOne
     lateinit var user: User
+
+    @ManyToOne
+    var cu:CuSetting? = null
 }

@@ -3,6 +3,7 @@ package measuremanager.settingsmanager.entities
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 
 @Entity
 class CuSetting {
@@ -16,4 +17,10 @@ class CuSetting {
 
     @ManyToOne
     lateinit var user: User
+
+    @ManyToOne
+    var gw : Gateway? = null
+
+    @OneToMany
+    lateinit var mus: MutableSet<MuSetting>
 }
