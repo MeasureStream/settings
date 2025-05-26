@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class MqttService(
     private val props: MqttProperties,
-    @Qualifier("conversionService") private val conversionService: ConversionService
+   // @Qualifier("conversionService") private val conversionService: ConversionService
 ) {
 
 
