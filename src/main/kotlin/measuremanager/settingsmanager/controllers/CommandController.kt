@@ -20,10 +20,9 @@ class CommandController( private val mq: MqttService) {
             cuSettingDTO = null,
             muSettingDTO = null,
         )
-        val mapper = jacksonObjectMapper()
 
-        val jsonString = mapper.writeValueAsString(c)
-        mq.sendCommandToNode(jsonString)
+        // da cambiare richiamare un servizio che richiama repo e mq
+        //mq.sendCommandToNode(jsonString)
 
     }
 
@@ -41,7 +40,7 @@ class CommandController( private val mq: MqttService) {
         val mapper = jacksonObjectMapper()
 
         val jsonString = mapper.writeValueAsString(c)
-        mq.sendCommandToNode(jsonString)
+        //mq.sendCommandToNode(jsonString)
 
     }
 }

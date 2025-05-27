@@ -5,8 +5,12 @@ import measuremanager.settingsmanager.dtos.CuCreateDTO
 import measuremanager.settingsmanager.dtos.CuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
 import measuremanager.settingsmanager.entities.CuSetting
+import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.User
+import measuremanager.settingsmanager.mqtt.MqttService
 import measuremanager.settingsmanager.repositories.CuSettingRepository
+import measuremanager.settingsmanager.repositories.GatewayRepository
+import measuremanager.settingsmanager.repositories.MuSettingRepository
 import measuremanager.settingsmanager.repositories.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
@@ -15,7 +19,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :  UserRepository):CuSettingService {
+class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :  UserRepository, private val mq: MqttService, private val gr:GatewayRepository, private val mr: MuSettingRepository):CuSettingService {
     override fun create(c: CuSettingDTO): CuSettingDTO {
         val user  = getOrCreateCurrentUserId()
         val ce = CuSetting().apply {
@@ -28,10 +32,10 @@ class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :
 
         user.cuSettings.add(ce)
         ur.save(user)
-
-
-
-        return cr.save(ce).toDTO()
+        val result = cr.save(ce).toDTO()
+        // creation ->  refresh
+        mq.sendCommandToCu(result, "read")
+        return result
     }
 
     override fun create(c : CuCreateDTO) : CuSettingDTO {
@@ -44,13 +48,17 @@ class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :
         user.cuSettings.add(ce)
         ur.save(user)
 
-        return cr.save(ce).toDTO()
+        val result = cr.save(ce).toDTO()
+        // creation ->  refresh
+        mq.sendCommandToCu(result, "read")
+        return result
     }
 
     override fun read(id: Long): CuSettingDTO {
         val ce = cr.findById(id).getOrNull()
         if (ce != null && ce.user.userId != getCurrentUserId()) throw  Exception("You can't get an Entity owned by someone else")
         if(ce == null ) throw EntityNotFoundException()
+
 
         return ce.toDTO()
     }
@@ -60,19 +68,48 @@ class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :
         return cr.findAllByUser_UserId(userid).map { it.toDTO() }
     }
 
-    override fun update(c: CuSettingDTO): CuSettingDTO {
+    override fun sendUpdate(c : CuSettingDTO): CuSettingDTO{
+
         val userid = getCurrentUserId()
         val ce = cr.findById(c.networkId).getOrElse { throw EntityNotFoundException() }
         if (ce.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
-
         ce.apply {
             bandwith = c.bandwith
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
         }
+        val result  = ce.toDTO()
+        mq.sendCommandToCu(result, "update")
+        return result
+    }
 
-        return cr.save(ce).toDTO()
+    override fun update(c: CuSettingDTO): CuSettingDTO {
+        // questa funzione deve essere richiamata solo da mqtt
+        //val userid = getCurrentUserId()
+        //val ce = cr.findById(c.networkId).getOrElse { throw EntityNotFoundException() }
+        //if (ce.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
+        val gw = gr.findById(c.gateway!!).getOrElse { Gateway().apply { id = c.gateway } }
+        val ce = cr.findById(c.networkId).getOrElse { CuSetting().apply { networkId = c.networkId } } // forse da rifare la create per fare l'assegnazione ad un user TODO()
+        val mus = mr.findAllById(c.mus)
+        ce.apply {
+            bandwith = c.bandwith
+            codingRate = c.codingRate
+            spreadingFactor = c.spreadingFactor
+            updateInterval = c.updateInterval
+            this.gw = gw
+
+        }
+        mus.map { it.cu = ce }
+        ce.mus.addAll(mus)
+        gw.cus.add(ce)
+
+        gr.save(gw)
+        val result = cr.save(ce)
+        mr.saveAll(mus)
+
+
+        return result.toDTO()
 
     }
 

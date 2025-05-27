@@ -8,6 +8,7 @@ interface CuSettingService {
     fun create(c : CuSettingDTO) : CuSettingDTO
     fun read(id: Long):CuSettingDTO
     fun listAll():List<CuSettingDTO>
+    fun sendUpdate(c : CuSettingDTO): CuSettingDTO
     fun update(c:CuSettingDTO):CuSettingDTO
     fun delete(id:Long)
 }

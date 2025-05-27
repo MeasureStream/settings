@@ -5,8 +5,12 @@ import measuremanager.settingsmanager.dtos.MuCreateDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
 import measuremanager.settingsmanager.entities.CuSetting
+import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.MuSetting
 import measuremanager.settingsmanager.entities.User
+import measuremanager.settingsmanager.mqtt.MqttService
+import measuremanager.settingsmanager.repositories.CuSettingRepository
+import measuremanager.settingsmanager.repositories.GatewayRepository
 import measuremanager.settingsmanager.repositories.MuSettingRepository
 import measuremanager.settingsmanager.repositories.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
@@ -16,7 +20,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:UserRepository) :MuSettingService {
+class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:UserRepository, private val mq :MqttService, private val gr : GatewayRepository, private val cr : CuSettingRepository) :MuSettingService {
     override fun create(m: MuSettingDTO): MuSettingDTO {
         val user  = getOrCreateCurrentUserId()
         val me = MuSetting().apply {
@@ -51,14 +55,37 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         return mr.findAllByUser_UserId(userid).map { it.toDTO() }
     }
 
-    override fun update(m: MuSettingDTO): MuSettingDTO {
+    override fun sendUpdate(m: MuSettingDTO): MuSettingDTO {
         val userid = getCurrentUserId()
         val me = mr.findById(m.networkId).getOrElse { throw EntityNotFoundException() }
         if(me.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
         me.apply {
             samplingFrequency = m.samplingFrequency
         }
-        return mr.save(me).toDTO()
+        mq.sendCommandToMu(me.toDTO(), "update")
+        return me.toDTO()
+    }
+
+    override fun update(m: MuSettingDTO): MuSettingDTO {
+        //val userid = getCurrentUserId()
+        val me = mr.findById(m.networkId).getOrElse { MuSetting().apply { networkId = m.networkId } }
+        val gw = gr.findById(m.gateway!!).getOrElse { Gateway().apply { id = m.gateway } }
+        val ce = cr.findById(m.cu!!).getOrElse { CuSetting().apply { networkId = m.cu } }
+
+        //if(me.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
+        me.apply {
+            samplingFrequency = m.samplingFrequency
+            cu = ce
+        }
+
+        ce.mus.add(me)
+        gw.cus.add(ce)
+
+        gr.save(gw)
+        cr.save(ce)
+        val result =   mr.save(me)
+
+        return result.toDTO()
     }
 
     override fun delete(id: Long) {

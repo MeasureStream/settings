@@ -8,6 +8,7 @@ interface MuSettingService {
     fun create(m:MuCreateDTO): MuSettingDTO
     fun read(id:Long) : MuSettingDTO
     fun listAll():List<MuSettingDTO>
+    fun sendUpdate(m:MuSettingDTO):MuSettingDTO
     fun update(m:MuSettingDTO) : MuSettingDTO
     fun delete(id:Long)
 }
