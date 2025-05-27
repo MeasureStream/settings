@@ -15,6 +15,7 @@ import measuremanager.settingsmanager.repositories.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
@@ -28,6 +29,7 @@ class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
+            mus = mutableSetOf()
         }
 
         user.cuSettings.add(ce)
@@ -40,9 +42,10 @@ class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :
 
     override fun create(c : CuCreateDTO) : CuSettingDTO {
         val user  = getOrCreateUserId( c.userId)
-
-        val ce = CuSetting().apply {
-            networkId = c.networkId
+        val ce = cr.findById(c.networkId)
+            .getOrDefault(CuSetting().apply { networkId = c.networkId })
+        ce.apply {
+            mus = mutableSetOf()
         }
 
         user.cuSettings.add(ce)

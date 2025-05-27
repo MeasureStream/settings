@@ -16,6 +16,7 @@ import measuremanager.settingsmanager.repositories.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
@@ -33,10 +34,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
 
     override fun create(m: MuCreateDTO): MuSettingDTO {
         val user  = getOrCreateUserId( m.userid)
-
-        val me = MuSetting().apply {
-            networkId = m.networkId
-        }
+        val me = mr.findById(m.networkId).getOrDefault( MuSetting().apply { networkId = m.networkId })
 
         user.muSettings.add(me)
         ur.save(user)

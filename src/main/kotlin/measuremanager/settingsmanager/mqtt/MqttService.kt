@@ -82,18 +82,10 @@ class MqttService(
         }
     }
 
-    fun sendCommandToGW( gw: Long , type: String) {
+    fun sendCommandToGW( c : CommandDTO , type: String) {
         val topic = "downlink/gateway"
         val mapper = jacksonObjectMapper()
-        val c = CommandDTO(
-            commandId = 1,
-            gateway = gw,
-            cu = -1,
-            mu = -1,
-            type = type,
-            cuSettingDTO = null,
-            muSettingDTO = null
-        )
+
 
         val command = mapper.writeValueAsString(c)
         val message = MqttMessage(command.toByteArray()).apply {
