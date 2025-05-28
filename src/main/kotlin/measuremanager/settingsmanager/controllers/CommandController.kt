@@ -2,13 +2,14 @@ package measuremanager.settingsmanager.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import measuremanager.settingsmanager.dtos.CommandDTO
+import measuremanager.settingsmanager.mqtt.MqttPublisherService
 import measuremanager.settingsmanager.mqtt.MqttService
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/API/command")
 class CommandController(
-    //private val mq: MqttService
+    private val mq: MqttPublisherService
 ) {
 
     @GetMapping("/start/{muid}","/start/{muid}/")
@@ -24,7 +25,7 @@ class CommandController(
         )
 
         // da cambiare richiamare un servizio che richiama repo e mq
-        //mq.sendCommandToNode(jsonString)
+        //mq.sendCommandToMu(c, "start")
 
     }
 

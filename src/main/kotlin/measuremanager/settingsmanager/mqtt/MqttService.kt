@@ -24,7 +24,7 @@ class MqttService(
     private val cs: CuSettingService,
     private val gs: GatewayService
    // @Qualifier("conversionService") private val conversionService: ConversionService
-) : MqttServiceInterface{
+) {
 
 
     private val client = MqttClient(props.broker, props.clientId)
@@ -88,75 +88,6 @@ class MqttService(
         }
     }
 
-    override fun sendCommandToGW( c : CommandDTO , type: String) {
-        val topic = "downlink/gateway"
-        val mapper = jacksonObjectMapper()
 
-
-        val command = mapper.writeValueAsString(c)
-        val message = MqttMessage(command.toByteArray()).apply {
-            // qos = 0 fire and forget
-            // qos = 1 at least once
-            // qos = 2 exactly once
-            qos = 1
-            isRetained = true
-        }
-        client.publish(topic, message)
-        println("Inviato comando a $topic: $command")
-    }
-
-    override fun sendCommandToCu(cu : CuSettingDTO, type : String) {
-        val topic = "downlink/cu"
-        val mapper = jacksonObjectMapper()
-        if(cu.gateway == null) throw Exception("No Route to cu : ${cu.networkId}")
-
-        val c = CommandDTO(
-            commandId = 1,
-            gateway = cu.gateway,
-            cu = cu.networkId,
-            mu = -1,
-            type = type,
-            cuSettingDTO = cu,
-            muSettingDTO = null
-        )
-
-        val command = mapper.writeValueAsString(c)
-        val message = MqttMessage(command.toByteArray()).apply {
-            // qos = 0 fire and forget
-            // qos = 1 at least once
-            // qos = 2 exactly once
-            qos = 1
-            isRetained = true
-        }
-        client.publish(topic, message)
-        println("Inviato comando a $topic: $command")
-    }
-
-    override fun sendCommandToMu(mu:MuSettingDTO, type:String) {
-        val topic = "downlink/mu"
-        val mapper = jacksonObjectMapper()
-        if(mu.gateway == null || mu.cu == null) throw Exception("No Route to cu : ${mu.networkId}")
-
-        val c = CommandDTO(
-            commandId = 1,
-            gateway = mu.gateway,
-            cu = mu.cu,
-            mu = mu.networkId,
-            type = type,
-            cuSettingDTO = null,
-            muSettingDTO = mu
-        )
-
-        val command = mapper.writeValueAsString(c)
-        val message = MqttMessage(command.toByteArray()).apply {
-            // qos = 0 fire and forget
-            // qos = 1 at least once
-            // qos = 2 exactly once
-            qos = 1
-            isRetained = true
-        }
-        client.publish(topic, message)
-        println("Inviato comando a $topic: $command")
-    }
 
 }
