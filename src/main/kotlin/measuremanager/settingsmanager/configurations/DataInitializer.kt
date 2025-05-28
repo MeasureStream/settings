@@ -47,16 +47,7 @@ class DataInitializer(
         }
         val savedGateway = gr.save(gateway)
 
-        // 3. Crea MeasurementUnits
-        val measurementUnits = List(20) { i ->
-            MuSetting().apply {
-                networkId = (i + 1).toLong()
-                samplingFrequency = 0
-                this.user = user
-            }
-        }
-
-        // 4. Crea ControlUnits associandoli a Gateway, User e MuSetting
+        // 3. Crea ControlUnits
         val controlUnitsSettings = List(10) { i ->
             CuSetting().apply {
                 networkId = (i + 1).toLong()
@@ -67,24 +58,37 @@ class DataInitializer(
                 gw = savedGateway
                 this.user = user
                 mus = mutableSetOf()
-            }.also { cu ->
-                cu.mus.add(measurementUnits[i])
-                cu.mus.add(measurementUnits[i + 10])
-                measurementUnits[i].cu = cu
-                measurementUnits[i + 10].cu = cu
             }
         }
 
-        // 5. Aggiorna relazioni inverse
+        // 4. Salva CuSettings PRIMA di usarli nei MuSetting
+        cur.saveAll(controlUnitsSettings)
+
+        // 5. Crea MuSettings associati a CuSetting salvati
+        val measurementUnits = List(20) { i ->
+            val relatedCu = controlUnitsSettings[i % 10] // usa 10 CU per 20 MU
+            MuSetting().apply {
+                networkId = (i + 1).toLong()
+                samplingFrequency = 0
+                this.user = user
+                this.cu = relatedCu
+            }.also { mu ->
+                relatedCu.mus.add(mu)
+            }
+        }
+
+        // 6. Salva MuSettings
+        mur.saveAll(measurementUnits)
+
+        // 7. Aggiorna relazioni inverse
         savedGateway.cus.addAll(controlUnitsSettings)
         user.cuSettings.addAll(controlUnitsSettings)
         user.muSettings.addAll(measurementUnits)
 
-        // 6. Salvataggio finale (ordine importante!)
-        gr.save(savedGateway) // per aggiornare la relazione con CU
-        ur.save(user)         // per aggiornare relazioni bidirezionali
-        cur.saveAll(controlUnitsSettings)
-        mur.saveAll(measurementUnits)
+        // 8. Salvataggi finali
+        gr.save(savedGateway)
+        ur.save(user)
     }
+
 
 }
