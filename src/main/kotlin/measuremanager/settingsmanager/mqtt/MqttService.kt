@@ -5,8 +5,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import measuremanager.settingsmanager.configurations.MqttProperties
 import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.dtos.CuSettingDTO
+import measuremanager.settingsmanager.dtos.GatewayDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.services.CuSettingService
+import measuremanager.settingsmanager.services.GatewayService
 import measuremanager.settingsmanager.services.MuSettingService
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -19,9 +21,10 @@ import org.springframework.stereotype.Service
 class MqttService(
     private val props: MqttProperties,
     private val ms : MuSettingService,
-    private val cs: CuSettingService
+    private val cs: CuSettingService,
+    private val gs: GatewayService
    // @Qualifier("conversionService") private val conversionService: ConversionService
-) {
+) : MqttServiceInterface{
 
 
     private val client = MqttClient(props.broker, props.clientId)
@@ -43,11 +46,12 @@ class MqttService(
 
             try {
                 val mapper = jacksonObjectMapper()
-                val cmd: CommandDTO = mapper.readValue(json)
-                println("Oggetto deserializzato: $cmd")
+                val gateway: GatewayDTO = mapper.readValue(json)
+                println("Oggetto deserializzato: $gateway")
 
                 //gw announce
                 //creare gw e creare i relativi cu e collegarli oppure se sono già presenti collegarli al gw
+                gs.update(gateway)
             } catch (e: Exception) {
                 println("Errore nella deserializzazione del messaggio: ${e.message}")
             }
@@ -62,6 +66,7 @@ class MqttService(
                 println("Oggetto deserializzato: $cmd")
 
                 //cu announce popolare cu o crearla e creare mu o collegarlo
+                cmd.cuSettingDTO?.let { cs.update(it) }
             } catch (e: Exception) {
                 println("Errore nella deserializzazione del messaggio: ${e.message}")
             }
@@ -76,13 +81,14 @@ class MqttService(
                 println("Oggetto deserializzato: $cmd")
 
                 //mu announce creare mu o popolare
+                cmd.muSettingDTO?.let { ms.update(it) }
             } catch (e: Exception) {
                 println("Errore nella deserializzazione del messaggio: ${e.message}")
             }
         }
     }
 
-    fun sendCommandToGW( c : CommandDTO , type: String) {
+    override fun sendCommandToGW( c : CommandDTO , type: String) {
         val topic = "downlink/gateway"
         val mapper = jacksonObjectMapper()
 
@@ -99,7 +105,7 @@ class MqttService(
         println("Inviato comando a $topic: $command")
     }
 
-    fun sendCommandToCu(cu : CuSettingDTO, type : String) {
+    override fun sendCommandToCu(cu : CuSettingDTO, type : String) {
         val topic = "downlink/cu"
         val mapper = jacksonObjectMapper()
         if(cu.gateway == null) throw Exception("No Route to cu : ${cu.networkId}")
@@ -126,7 +132,7 @@ class MqttService(
         println("Inviato comando a $topic: $command")
     }
 
-    fun sendCommandToMu(mu:MuSettingDTO, type:String) {
+    override fun sendCommandToMu(mu:MuSettingDTO, type:String) {
         val topic = "downlink/mu"
         val mapper = jacksonObjectMapper()
         if(mu.gateway == null || mu.cu == null) throw Exception("No Route to cu : ${mu.networkId}")

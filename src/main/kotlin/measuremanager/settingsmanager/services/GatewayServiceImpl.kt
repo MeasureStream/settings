@@ -7,6 +7,7 @@ import measuremanager.settingsmanager.dtos.toDTO
 import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.mqtt.MqttService
+import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
 import measuremanager.settingsmanager.repositories.MuSettingRepository
@@ -15,7 +16,7 @@ import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class GatewayServiceImpl(private val gr:GatewayRepository, private val cr: CuSettingRepository, private val mr: MuSettingRepository, private val mq : MqttService) : GatewayService {
+class GatewayServiceImpl(private val gr:GatewayRepository, private val cr: CuSettingRepository, private val mr: MuSettingRepository, private val mq : MqttServiceInterface) : GatewayService {
     override fun create(c: CommandDTO): CommandDTO {
         // praticamente non viene mai chiamato
         throw Exception("This operation is not allowed yet")

@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/API/command")
-class CommandController( private val mq: MqttService) {
+class CommandController(
+    //private val mq: MqttService
+) {
 
     @GetMapping("/start/{muid}","/start/{muid}/")
     fun start(@PathVariable muid : Long){

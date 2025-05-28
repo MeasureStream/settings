@@ -9,6 +9,7 @@ import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.MuSetting
 import measuremanager.settingsmanager.entities.User
 import measuremanager.settingsmanager.mqtt.MqttService
+import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
 import measuremanager.settingsmanager.repositories.MuSettingRepository
@@ -21,7 +22,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:UserRepository, private val mq :MqttService, private val gr : GatewayRepository, private val cr : CuSettingRepository) :MuSettingService {
+class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:UserRepository, private val mq :MqttServiceInterface, private val gr : GatewayRepository, private val cr : CuSettingRepository) :MuSettingService {
     override fun create(m: MuSettingDTO): MuSettingDTO {
         val user  = getOrCreateCurrentUserId()
         val me = MuSetting().apply {

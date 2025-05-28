@@ -8,6 +8,7 @@ import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.User
 import measuremanager.settingsmanager.mqtt.MqttService
+import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
 import measuremanager.settingsmanager.repositories.MuSettingRepository
@@ -20,7 +21,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :  UserRepository, private val mq: MqttService, private val gr:GatewayRepository, private val mr: MuSettingRepository):CuSettingService {
+class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur :  UserRepository, private val mq: MqttServiceInterface, private val gr:GatewayRepository, private val mr: MuSettingRepository):CuSettingService {
     override fun create(c: CuSettingDTO): CuSettingDTO {
         val user  = getOrCreateCurrentUserId()
         val ce = CuSetting().apply {
