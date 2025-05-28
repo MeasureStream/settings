@@ -27,37 +27,27 @@ class DataInitializer(
     }
 
     override fun afterPropertiesSet() {
+        println("Initializing fake data")
 
+        // 1. Crea e salva User
         val user = User().apply {
-            name="polito"
+            name = "polito"
             surname = "polito"
-            email="polito@polito.it"
-            userId = "b0be4ea5-17d3-4e63-ad81-510b4532dac8"//"6533c601-0db1-47a6-a150-f402cb142362"//"1d445807-c24e-4513-884d-22451ce9cf67"
+            email = "polito@polito.it"
+            userId = "b0be4ea5-17d3-4e63-ad81-510b4532dac8"
             role = "customer"
-
             muSettings = mutableSetOf()
-            cuSettings= mutableSetOf()
+            cuSettings = mutableSetOf()
         }
         ur.save(user)
 
+        // 2. Crea e salva Gateway
         val gateway = Gateway().apply {
-            id = 1
             cus = mutableSetOf()
         }
+        val savedGateway = gr.save(gateway)
 
-        val controlUnitsSettings = List(10) { i ->
-            CuSetting().apply {
-                networkId = (i + 1).toLong()
-                bandwith = 0
-                codingRate = 0
-                spreadingFactor = 0
-                updateInterval = 0
-                gw = gateway
-                this.user = user
-                mus = mutableSetOf()
-            }
-        }
-
+        // 3. Crea MeasurementUnits
         val measurementUnits = List(20) { i ->
             MuSetting().apply {
                 networkId = (i + 1).toLong()
@@ -66,24 +56,35 @@ class DataInitializer(
             }
         }
 
-        gateway.cus.addAll(controlUnitsSettings)
-
-
-        controlUnitsSettings.forEachIndexed { i, it ->
-            it.mus.add(measurementUnits[i])
-            it.mus.add(measurementUnits[i+10])
-
-            measurementUnits[i].cu = it
-            measurementUnits[i+10].cu = it
+        // 4. Crea ControlUnits associandoli a Gateway, User e MuSetting
+        val controlUnitsSettings = List(10) { i ->
+            CuSetting().apply {
+                networkId = (i + 1).toLong()
+                bandwith = 0
+                codingRate = 0
+                spreadingFactor = 0
+                updateInterval = 0
+                gw = savedGateway
+                this.user = user
+                mus = mutableSetOf()
+            }.also { cu ->
+                cu.mus.add(measurementUnits[i])
+                cu.mus.add(measurementUnits[i + 10])
+                measurementUnits[i].cu = cu
+                measurementUnits[i + 10].cu = cu
+            }
         }
 
+        // 5. Aggiorna relazioni inverse
+        savedGateway.cus.addAll(controlUnitsSettings)
         user.cuSettings.addAll(controlUnitsSettings)
         user.muSettings.addAll(measurementUnits)
 
-
-        ur.save(user)
-        gr.save(gateway)
+        // 6. Salvataggio finale (ordine importante!)
+        gr.save(savedGateway) // per aggiornare la relazione con CU
+        ur.save(user)         // per aggiornare relazioni bidirezionali
         cur.saveAll(controlUnitsSettings)
         mur.saveAll(measurementUnits)
     }
+
 }
