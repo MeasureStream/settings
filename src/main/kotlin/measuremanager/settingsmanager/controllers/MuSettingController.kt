@@ -30,7 +30,7 @@ class MuSettingController(private val ms: MuSettingService) {
     }
     @PutMapping("","/")
     fun update(@RequestBody m:MuSettingDTO):MuSettingDTO{
-        return ms.update(m)
+        return ms.sendUpdate(m)
     }
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping("/{musettingid}","/{musettingid}/")

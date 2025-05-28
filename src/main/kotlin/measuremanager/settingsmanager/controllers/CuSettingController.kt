@@ -23,7 +23,7 @@ class CuSettingController (private val cs : CuSettingService){
     }
     @PutMapping("","/")
     fun update(@RequestBody c : CuSettingDTO ): CuSettingDTO {
-        return cs.update(c)
+        return cs.sendUpdate(c)
     }
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping("/{cusettingid}","/{cusettingid}/")
