@@ -43,6 +43,7 @@ class DataInitializer(
 
         // 2. Crea e salva Gateway
         val gateway = Gateway().apply {
+            id = 1
             cus = mutableSetOf()
         }
         val savedGateway = gr.save(gateway)
