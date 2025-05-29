@@ -26,7 +26,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         val user  = getOrCreateCurrentUserId()
         val ce = CuSetting().apply {
             networkId = c.networkId
-            bandwith = c.bandwith
+            bandwidth = c.bandwidth
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
@@ -78,7 +78,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         val ce = cr.findById(c.networkId).getOrElse { throw EntityNotFoundException() }
         if (ce.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
         ce.apply {
-            bandwith = c.bandwith
+            bandwidth = c.bandwidth
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
@@ -97,7 +97,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         val ce = cr.findById(c.networkId).getOrElse { CuSetting().apply { networkId = c.networkId } } // forse da rifare la create per fare l'assegnazione ad un user TODO()
         val mus = mr.findAllById(c.mus)
         ce.apply {
-            bandwith = c.bandwith
+            bandwidth = c.bandwidth
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval

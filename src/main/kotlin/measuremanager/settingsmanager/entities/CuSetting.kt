@@ -10,7 +10,7 @@ class CuSetting {
     @Id
     var networkId : Long = 0
 
-    var bandwith:Long = 0
+    var bandwidth:Long = 0
     var codingRate : Long = 0
     var spreadingFactor : Long = 0
     var updateInterval : Long = 0

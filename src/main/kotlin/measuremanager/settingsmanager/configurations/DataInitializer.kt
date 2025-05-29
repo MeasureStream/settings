@@ -52,7 +52,7 @@ class DataInitializer(
         val controlUnitsSettings = List(10) { i ->
             CuSetting().apply {
                 networkId = (i + 1).toLong()
-                bandwith = 0
+                bandwidth = 0
                 codingRate = 0
                 spreadingFactor = 0
                 updateInterval = 0
