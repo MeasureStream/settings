@@ -1,6 +1,7 @@
 package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import measuremanager.settingsmanager.dtos.MuCreateDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
@@ -32,7 +33,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         ur.save(user)
         return mr.save(me).toDTO()
     }
-
+    @Transactional
     override fun create(m: MuCreateDTO): MuSettingDTO {
         val user  = getOrCreateUserId( m.userId)
         val me = mr.findById(m.networkId).getOrDefault( MuSetting().apply { networkId = m.networkId })

@@ -1,6 +1,7 @@
 package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import measuremanager.settingsmanager.dtos.CuCreateDTO
 import measuremanager.settingsmanager.dtos.CuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
@@ -41,6 +42,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         return result
     }
 
+    @Transactional
     override fun create(c : CuCreateDTO) : CuSettingDTO {
         val user  = getOrCreateUserId( c.userId)
         val ce = cr.findById(c.networkId)
