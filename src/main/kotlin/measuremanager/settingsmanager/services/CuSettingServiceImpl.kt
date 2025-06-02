@@ -56,7 +56,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
 
         val result = cr.save(ce).toDTO()
         // creation ->  refresh
-        mq.sendCommandToCu(result, "read")
+        //mq.sendCommandToCu(result, "read")
         return result
     }
 
