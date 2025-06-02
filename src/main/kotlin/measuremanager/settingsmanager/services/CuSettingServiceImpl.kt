@@ -46,7 +46,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
     override fun create(c : CuCreateDTO) : CuSettingDTO {
         val user  = getOrCreateUserId( c.userId)
         val ce = cr.findById(c.networkId)
-            .getOrDefault(CuSetting().apply { networkId = c.networkId })
+            .getOrDefault(CuSetting().apply { networkId = c.networkId; this.user = user })
         ce.apply {
             mus = mutableSetOf()
         }
