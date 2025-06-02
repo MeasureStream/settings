@@ -34,7 +34,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
     }
 
     override fun create(m: MuCreateDTO): MuSettingDTO {
-        val user  = getOrCreateUserId( m.userid)
+        val user  = getOrCreateUserId( m.userId)
         val me = mr.findById(m.networkId).getOrDefault( MuSetting().apply { networkId = m.networkId })
 
         user.muSettings.add(me)
