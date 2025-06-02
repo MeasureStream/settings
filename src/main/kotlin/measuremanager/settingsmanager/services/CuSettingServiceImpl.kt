@@ -60,7 +60,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
 
     override fun read(id: Long): CuSettingDTO {
         val ce = cr.findById(id).getOrNull()
-        if (ce != null && ce.user.userId != getCurrentUserId()) throw  Exception("You can't get an Entity owned by someone else")
+        if (ce != null && ce.user.userId != getCurrentUserId() && !isAdmin() ) throw  Exception("You can't get an Entity owned by someone else")
         if(ce == null ) throw EntityNotFoundException()
 
 
@@ -68,6 +68,8 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
     }
 
     override fun listAll(): List<CuSettingDTO> {
+        if(isAdmin())
+            return cr.findAll().map{it.toDTO()}
         val userid = getCurrentUserId()
         return cr.findAllByUser_UserId(userid).map { it.toDTO() }
     }
@@ -76,7 +78,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
 
         val userid = getCurrentUserId()
         val ce = cr.findById(c.networkId).getOrElse { throw EntityNotFoundException() }
-        if (ce.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
+        if (ce.user.userId != userid && !isAdmin() ) throw  Exception("You can't update an Entity owned by someone else")
         ce.apply {
             bandwidth = c.bandwidth
             codingRate = c.codingRate
@@ -120,7 +122,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
     override fun delete(id: Long) {
         val userid = getCurrentUserId()
         val ce = cr.findById(id).getOrElse { throw EntityNotFoundException() }
-        if (ce.user.userId != userid) throw  Exception("You can't delete an Entity owned by someone else")
+        if (ce.user.userId != userid && !isAdmin()) throw  Exception("You can't delete an Entity owned by someone else")
         cr.delete(ce)
 
     }
@@ -177,5 +179,11 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         }
 
         return ur.save(newUser)
+    }
+
+    fun isAdmin() : Boolean{
+        val auth = SecurityContextHolder.getContext().authentication
+        val isAdmin = auth.authorities.any { it.authority == "ROLE_app-admin" }
+        return isAdmin
     }
 }

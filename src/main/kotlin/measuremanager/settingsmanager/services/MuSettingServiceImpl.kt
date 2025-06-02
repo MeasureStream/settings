@@ -45,11 +45,13 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
 
     override fun read(id: Long): MuSettingDTO {
         val me = mr.findById(id).getOrElse { throw EntityNotFoundException() }
-        if(me.user.userId != getCurrentUserId()) throw  Exception("You can't get an Entity owned by someone else")
+        if(me.user.userId != getCurrentUserId() && !isAdmin() ) throw  Exception("You can't get an Entity owned by someone else")
         return me.toDTO()
     }
 
     override fun listAll(): List<MuSettingDTO> {
+        if(isAdmin())
+            return mr.findAll().map{it.toDTO()}
         val userid = getCurrentUserId()
         return mr.findAllByUser_UserId(userid).map { it.toDTO() }
     }
@@ -57,7 +59,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
     override fun sendUpdate(m: MuSettingDTO): MuSettingDTO {
         val userid = getCurrentUserId()
         val me = mr.findById(m.networkId).getOrElse { throw EntityNotFoundException() }
-        if(me.user.userId != userid) throw  Exception("You can't update an Entity owned by someone else")
+        if(me.user.userId != userid && !isAdmin()) throw  Exception("You can't update an Entity owned by someone else")
         me.apply {
             samplingFrequency = m.samplingFrequency
         }
@@ -90,7 +92,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
     override fun delete(id: Long) {
         val userid = getCurrentUserId()
         val me = mr.findById(id).getOrElse { throw EntityNotFoundException() }
-        if(me.user.userId != userid) throw  Exception("You can't delete an Entity owned by someone else")
+        if(me.user.userId != userid && !isAdmin() ) throw  Exception("You can't delete an Entity owned by someone else")
         mr.delete(me)
     }
 
@@ -146,5 +148,11 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         }
 
         return ur.save(newUser)
+    }
+
+    fun isAdmin() : Boolean{
+        val auth = SecurityContextHolder.getContext().authentication
+        val isAdmin = auth.authorities.any { it.authority == "ROLE_app-admin" }
+        return isAdmin
     }
 }
