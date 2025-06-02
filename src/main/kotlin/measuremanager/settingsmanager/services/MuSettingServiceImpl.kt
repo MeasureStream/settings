@@ -45,7 +45,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
     }
 
     override fun read(id: Long): MuSettingDTO {
-        val me = mr.findById(id).getOrElse { throw EntityNotFoundException() }
+        val me = mr.findById(id).getOrElse { throw EntityNotFoundException("not found a MuSetting with id : ${id}") }
         if(me.user.userId != getCurrentUserId() && !isAdmin() ) throw  Exception("You can't get an Entity owned by someone else")
         return me.toDTO()
     }
