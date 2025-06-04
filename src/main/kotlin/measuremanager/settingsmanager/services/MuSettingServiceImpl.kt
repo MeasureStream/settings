@@ -68,6 +68,7 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         return me.toDTO()
     }
 
+    @Transactional
     override fun update(m: MuSettingDTO): MuSettingDTO {
         //val userid = getCurrentUserId()
         val me = mr.findById(m.networkId).getOrElse { MuSetting().apply { networkId = m.networkId } }
