@@ -67,7 +67,7 @@ class GatewayServiceImpl(private val gr:GatewayRepository, private val cr: CuSet
            cus.add(cr.findById(cId)
                .getOrDefault(CuSetting().apply { networkId = cId; mus= mutableSetOf(); this.gw = gw }))
         }
-        gw.cus.clear()
+        //gw.cus.clear()
         gw.cus.addAll(cus)
 
 
