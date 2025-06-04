@@ -23,7 +23,7 @@ class DataInitializer(
 ) : InitializingBean{
     @PostConstruct
     fun init(){
-        print("initialize fake data")
+        println("initialize fake data")
     }
 
     override fun afterPropertiesSet() {

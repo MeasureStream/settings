@@ -92,6 +92,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
         return result
     }
 
+    @Transactional
     override fun update(c: CuSettingDTO): CuSettingDTO {
         // questa funzione deve essere richiamata solo da mqtt
         //val userid = getCurrentUserId()
