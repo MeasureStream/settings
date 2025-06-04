@@ -6,6 +6,7 @@ import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.dtos.CuSettingDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.springframework.stereotype.Service
 
@@ -16,6 +17,14 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
 
     init {
         // Attiva la riconnessione automatica
+
+        val options = MqttConnectOptions().apply {
+            isCleanSession = true
+            userName = props.username
+            password = this@MqttPublisherService.props.password.toCharArray()
+        }
+
+        client.connect(options)
         client.setManualAcks(false) // opzionale
         client.setTimeToWait(1000)
         connectIfNecessary()
