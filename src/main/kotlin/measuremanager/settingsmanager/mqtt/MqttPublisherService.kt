@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service
 @Service
 class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInterface {
 
-    private val client = MqttClient(props.broker, props.clientId)
+    private val client = MqttClient(props.broker, "spring-backend-publisher")
 
     init {
         // Attiva la riconnessione automatica
 
         val options = MqttConnectOptions().apply {
-            isCleanSession = true
+            isCleanSession = false
             userName = props.username
             password = this@MqttPublisherService.props.password.toCharArray()
         }
