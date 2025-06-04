@@ -35,6 +35,12 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
 
 
     override fun sendCommandToGW(c : CommandDTO, type: String) {
+        connectIfNecessary()
+        if (!client.isConnected) {
+            println("Impossibile inviare comando: client MQTT non connesso.")
+            return
+        }
+
         val topic = "downlink/gateway"
         val mapper = jacksonObjectMapper()
 
@@ -52,6 +58,12 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
     }
 
     override fun sendCommandToCu(cu : CuSettingDTO, type : String) {
+        connectIfNecessary()
+        if (!client.isConnected) {
+            println("Impossibile inviare comando: client MQTT non connesso.")
+            return
+        }
+
         val topic = "downlink/cu"
         val mapper = jacksonObjectMapper()
         if(cu.gateway == null) throw Exception("No Route to cu : ${cu.networkId}")
@@ -79,6 +91,12 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
     }
 
     override fun sendCommandToMu(mu: MuSettingDTO, type:String) {
+        connectIfNecessary()
+        if (!client.isConnected) {
+            println("Impossibile inviare comando: client MQTT non connesso.")
+            return
+        }
+
         val topic = "downlink/mu"
         val mapper = jacksonObjectMapper()
         if(mu.gateway == null || mu.cu == null) throw Exception("No Route to cu : ${mu.networkId}")
