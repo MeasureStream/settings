@@ -14,6 +14,26 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
 
     private val client = MqttClient(props.broker, props.clientId)
 
+    init {
+        // Attiva la riconnessione automatica
+        client.setManualAcks(false) // opzionale
+        client.setTimeToWait(1000)
+        connectIfNecessary()
+    }
+
+    private fun connectIfNecessary() {
+        if (!client.isConnected) {
+            try {
+                println("Connessione MQTT a ${props.broker}...")
+                client.connect()
+                println("MQTT client connesso.")
+            } catch (e: Exception) {
+                println("Errore nella connessione MQTT: ${e.message}")
+            }
+        }
+    }
+
+
     override fun sendCommandToGW(c : CommandDTO, type: String) {
         val topic = "downlink/gateway"
         val mapper = jacksonObjectMapper()
