@@ -1,6 +1,7 @@
 package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.dtos.GatewayDTO
 import measuremanager.settingsmanager.dtos.toDTO
@@ -55,7 +56,7 @@ class GatewayServiceImpl(private val gr:GatewayRepository, private val cr: CuSet
         mq.sendCommandToGW(c, c.type)
         return c
     }
-
+    @Transactional
     override fun update(g : GatewayDTO ): GatewayDTO {
         // risponde ad un annunce di gateway aggiorna tutta la lista di cus se gw non esiste lo crea , uno dei pochi modi di creare un gw
         val gw = gr.findById(g.id)
