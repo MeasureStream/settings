@@ -31,10 +31,16 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
     }
 
     private fun connectIfNecessary() {
+        val options = MqttConnectOptions().apply {
+            isCleanSession = true
+            userName = props.username
+            password = this@MqttPublisherService.props.password.toCharArray()
+        }
+
         if (!client.isConnected) {
             try {
                 println("Connessione MQTT a ${props.broker}...")
-                client.connect()
+                client.connect(options)
                 println("MQTT client connesso.")
             } catch (e: Exception) {
                 println("Errore nella connessione MQTT: ${e.message}")
