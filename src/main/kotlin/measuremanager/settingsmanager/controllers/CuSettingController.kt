@@ -30,4 +30,9 @@ class CuSettingController (private val cs : CuSettingService){
     fun delete(@PathVariable cusettingid:Long){
         cs.delete(cusettingid)
     }
+
+    @GetMapping("/{cusettingid}/isalive","/{cusettingid}/isalive/" )
+    fun isalive(@PathVariable cusettingid:Long) : Long?{
+        return cs.read(cusettingid).gateway
+    }
 }
