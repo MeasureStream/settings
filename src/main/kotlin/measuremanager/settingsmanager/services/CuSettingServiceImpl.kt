@@ -12,6 +12,7 @@ import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
 import measuremanager.settingsmanager.repositories.MuSettingRepository
 import measuremanager.settingsmanager.repositories.UserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
@@ -68,12 +69,12 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
     }
 
     override fun readlist(ids: List<Long> ) : List<CuGw> {
-        val cus = cr.findAllById(ids)
+        val cus = ids.map{cr.findByIdOrNull(it)}
         val userid = getCurrentUserId()
-        if (cus.map { it.user.userId }.any{ it!= userid} && !isAdmin())
+        if (cus.filterNotNull().map { it.user.userId }.any{ it!= userid} && !isAdmin())
             throw Exception("You can't get an Entity owned by someone else")
 
-        return cus.map { it.toCuGw() }
+        return cus.mapIndexed{ i, it -> it?.toCuGw() ?: CuGw(ids[i], null) }
     }
 
     override fun listAll(): List<CuSettingDTO> {
