@@ -1,5 +1,6 @@
 package measuremanager.settingsmanager.controllers
 
+import measuremanager.settingsmanager.dtos.CuGw
 import measuremanager.settingsmanager.dtos.CuSettingDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.services.CuSettingService
@@ -32,7 +33,12 @@ class CuSettingController (private val cs : CuSettingService){
     }
 
     @GetMapping("/{cusettingid}/isalive","/{cusettingid}/isalive/" )
-    fun isalive(@PathVariable cusettingid:Long) : Long?{
+    fun isAlive(@PathVariable cusettingid:Long) : Long?{
         return cs.read(cusettingid).gateway
+    }
+
+    @PostMapping("/arealive","/arealive/" )
+    fun areAlive(@RequestBody cusettingids:List<Long>) : List<CuGw> {
+        return cs.readlist(cusettingids)
     }
 }

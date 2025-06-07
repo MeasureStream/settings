@@ -2,9 +2,7 @@ package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
-import measuremanager.settingsmanager.dtos.CuCreateDTO
-import measuremanager.settingsmanager.dtos.CuSettingDTO
-import measuremanager.settingsmanager.dtos.toDTO
+import measuremanager.settingsmanager.dtos.*
 import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.User
@@ -67,6 +65,15 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
 
 
         return ce.toDTO()
+    }
+
+    override fun readlist(ids: List<Long> ) : List<CuGw> {
+        val cus = cr.findAllById(ids)
+        val userid = getCurrentUserId()
+        if (cus.map { it.user.userId }.any{ it!= userid} && !isAdmin())
+            throw Exception("You can't get an Entity owned by someone else")
+
+        return cus.map { it.toCuGw() }
     }
 
     override fun listAll(): List<CuSettingDTO> {
