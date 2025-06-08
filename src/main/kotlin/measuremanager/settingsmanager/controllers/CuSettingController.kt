@@ -39,6 +39,7 @@ class CuSettingController (private val cs : CuSettingService){
 
     @PostMapping("/arealive","/arealive/" )
     fun areAlive(@RequestBody cusettingids:List<Long>) : List<CuGw> {
+        println("call arealive    list: $cusettingids")
         return cs.readlist(cusettingids)
     }
 }
