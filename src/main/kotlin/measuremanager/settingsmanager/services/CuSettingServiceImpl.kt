@@ -71,6 +71,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
     override fun readlist(ids: List<Long> ) : List<CuGw> {
         val cus = ids.map{cr.findByIdOrNull(it)}
         val userid = getCurrentUserId()
+        println("readlist from $userid    list: $ids")
         if (cus.filterNotNull().map { it.user.userId }.any{ it!= userid} && !isAdmin())
             throw Exception("You can't get an Entity owned by someone else")
 
