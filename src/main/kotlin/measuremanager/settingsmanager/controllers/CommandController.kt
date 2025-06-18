@@ -4,46 +4,27 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.mqtt.MqttPublisherService
 import measuremanager.settingsmanager.mqtt.MqttService
+import measuremanager.settingsmanager.services.MuSettingService
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/API/command")
 class CommandController(
-    private val mq: MqttPublisherService
+    private val mq: MqttPublisherService,
+    private  val ms: MuSettingService
 ) {
 
     @GetMapping("/start/{muid}","/start/{muid}/")
-    fun start(@PathVariable muid : Long){
-        val c = CommandDTO(
-            commandId = 1 ,
-            gateway = 1,
-            cu = 1  ,
-            mu = 1,
-            type = "start",
-            cuSettingDTO = null,
-            muSettingDTO = null,
-        )
+    fun start(@PathVariable muid : Long):Long{
 
-        // da cambiare richiamare un servizio che richiama repo e mq
-        //mq.sendCommandToMu(c, "start")
+        return ms.start(muid)
+
 
     }
 
-    @GetMapping("/stop/{muid}","/stop/{muid}")
-    fun stop(@PathVariable muid : Long){
-        val c = CommandDTO(
-            commandId = 1 ,
-            gateway = 1,
-            cu = 1  ,
-            mu = 1,
-            type = "stop",
-            cuSettingDTO = null,
-            muSettingDTO = null,
-        )
-        val mapper = jacksonObjectMapper()
+    @GetMapping("/stop/{muid}","/stop/{muid}/")
+    fun stop(@PathVariable muid : Long): Long{
 
-        val jsonString = mapper.writeValueAsString(c)
-        //mq.sendCommandToNode(jsonString)
-
+        return ms.stop(muid)
     }
 }

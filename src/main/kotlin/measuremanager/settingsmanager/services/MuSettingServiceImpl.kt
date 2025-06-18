@@ -2,6 +2,7 @@ package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
+import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.dtos.MuCreateDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
@@ -9,6 +10,7 @@ import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.MuSetting
 import measuremanager.settingsmanager.entities.User
+import measuremanager.settingsmanager.mqtt.MqttPublisherService
 import measuremanager.settingsmanager.mqtt.MqttService
 import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
@@ -89,6 +91,21 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         val result =   mr.save(me)
 
         return result.toDTO()
+    }
+
+    //m=Id
+    override fun start(m: Long): Long {
+        val MU = mr.findById(m).getOrElse { throw EntityNotFoundException("not found a MuSetting with id : ${m}") }
+        mq.sendCommandToMu(MU.toDTO(), "start")
+
+        return 1
+    }
+
+    override fun stop(m: Long): Long {
+        val MU = mr.findById(m).getOrElse { throw EntityNotFoundException("not found a MuSetting with id : ${m}") }
+        mq.sendCommandToMu(MU.toDTO(), "stop")
+
+        return 1
     }
 
     override fun delete(id: Long) {

@@ -114,7 +114,7 @@ class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInter
 
         val topic = "downlink/mu"
         val mapper = jacksonObjectMapper()
-        if(mu.gateway == null || mu.cu == null) throw Exception("No Route to cu : ${mu.networkId}")
+        if(mu.gateway == null || mu.cu == null) throw Exception("No Route to mu : ${mu.networkId}")
 
         val c = CommandDTO(
             commandId = 1,
