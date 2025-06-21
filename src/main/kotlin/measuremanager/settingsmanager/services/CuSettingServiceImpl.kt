@@ -6,7 +6,6 @@ import measuremanager.settingsmanager.dtos.*
 import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.User
-import measuremanager.settingsmanager.mqtt.MqttService
 import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
@@ -131,10 +130,14 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
 
     }
 
-    override fun delete(id: Long) {
-        val userid = getCurrentUserId()
+    override fun delete(id: Long, kafka: Boolean) {
         val ce = cr.findById(id).getOrElse { throw EntityNotFoundException() }
-        if (ce.user.userId != userid && !isAdmin()) throw  Exception("You can't delete an Entity owned by someone else")
+
+        if (!kafka){
+            val userid = getCurrentUserId()
+            if (ce.user.userId != userid && !isAdmin()) throw  Exception("You can't delete an Entity owned by someone else")
+        }
+
         cr.delete(ce)
 
     }

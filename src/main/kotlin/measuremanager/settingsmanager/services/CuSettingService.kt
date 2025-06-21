@@ -12,5 +12,5 @@ interface CuSettingService {
     fun listAll():List<CuSettingDTO>
     fun sendUpdate(c : CuSettingDTO): CuSettingDTO
     fun update(c:CuSettingDTO):CuSettingDTO
-    fun delete(id:Long)
+    fun delete(id:Long, kafka: Boolean)
 }

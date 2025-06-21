@@ -2,7 +2,6 @@ package measuremanager.settingsmanager.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import measuremanager.settingsmanager.dtos.EventMU
-import measuremanager.settingsmanager.dtos.MuCreateDTO
 import measuremanager.settingsmanager.services.MuSettingService
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
@@ -18,10 +17,11 @@ class KafkaMuConsumer(private val ms: MuSettingService, private val objectMapper
             when (event.eventType){
                 "CREATE" -> {
                     val data = ms.create(event.mu)
-                    println("Saved data: $data")
+                    println("Saved mu: $data")
                 }
                 "DELETE" -> {
-                    ms.delete(event.mu.networkId)
+                    ms.delete(event.mu.networkId, true)
+                    println("deleted mu: ${event.mu}")
                 }
                 else -> {throw Exception("Unrecognized event : $event")}
             }

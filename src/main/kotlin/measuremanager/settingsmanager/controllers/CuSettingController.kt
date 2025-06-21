@@ -2,7 +2,6 @@ package measuremanager.settingsmanager.controllers
 
 import measuremanager.settingsmanager.dtos.CuGw
 import measuremanager.settingsmanager.dtos.CuSettingDTO
-import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.services.CuSettingService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -29,7 +28,7 @@ class CuSettingController (private val cs : CuSettingService){
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping("/{cusettingid}","/{cusettingid}/")
     fun delete(@PathVariable cusettingid:Long){
-        cs.delete(cusettingid)
+        cs.delete(cusettingid, false)
     }
 
     @GetMapping("/{cusettingid}/isalive","/{cusettingid}/isalive/" )

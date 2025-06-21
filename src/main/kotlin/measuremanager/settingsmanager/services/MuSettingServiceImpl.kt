@@ -2,7 +2,6 @@ package measuremanager.settingsmanager.services
 
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
-import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.dtos.MuCreateDTO
 import measuremanager.settingsmanager.dtos.MuSettingDTO
 import measuremanager.settingsmanager.dtos.toDTO
@@ -10,8 +9,6 @@ import measuremanager.settingsmanager.entities.CuSetting
 import measuremanager.settingsmanager.entities.Gateway
 import measuremanager.settingsmanager.entities.MuSetting
 import measuremanager.settingsmanager.entities.User
-import measuremanager.settingsmanager.mqtt.MqttPublisherService
-import measuremanager.settingsmanager.mqtt.MqttService
 import measuremanager.settingsmanager.mqtt.MqttServiceInterface
 import measuremanager.settingsmanager.repositories.CuSettingRepository
 import measuremanager.settingsmanager.repositories.GatewayRepository
@@ -26,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @Service
 class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:UserRepository, private val mq :MqttServiceInterface, private val gr : GatewayRepository, private val cr : CuSettingRepository) :MuSettingService {
+    @Transactional
     override fun create(m: MuSettingDTO): MuSettingDTO {
         val user  = getOrCreateCurrentUserId()
         val me = MuSetting().apply {
@@ -108,10 +106,15 @@ class MuSettingServiceImpl(private val mr:MuSettingRepository, private val ur:Us
         return 1
     }
 
-    override fun delete(id: Long) {
-        val userid = getCurrentUserId()
+    override fun delete(id: Long, kafka: Boolean) {
+
         val me = mr.findById(id).getOrElse { throw EntityNotFoundException() }
-        if(me.user.userId != userid && !isAdmin() ) throw  Exception("You can't delete an Entity owned by someone else")
+
+        if(!kafka){
+            val userid = getCurrentUserId()
+            if(me.user.userId != userid && !isAdmin() ) throw  Exception("You can't delete an Entity owned by someone else")
+        }
+
         mr.delete(me)
     }
 

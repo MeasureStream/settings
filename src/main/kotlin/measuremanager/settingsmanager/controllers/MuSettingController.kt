@@ -35,6 +35,6 @@ class MuSettingController(private val ms: MuSettingService) {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping("/{musettingid}","/{musettingid}/")
     fun delete(@PathVariable musettingid:Long){
-        ms.delete(musettingid)
+        ms.delete(musettingid, false)
     }
 }

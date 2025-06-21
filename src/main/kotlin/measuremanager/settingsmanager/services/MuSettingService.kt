@@ -12,5 +12,5 @@ interface MuSettingService {
     fun update(m:MuSettingDTO) : MuSettingDTO
     fun start(m:Long):Long
     fun stop(m:Long):Long
-    fun delete(id:Long)
+    fun delete(id:Long,  kafka: Boolean)
 }
