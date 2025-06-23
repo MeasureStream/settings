@@ -30,6 +30,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
             mus = mutableSetOf()
+            updateTxPower = c.updateTxPower
         }
 
         user.cuSettings.add(ce)
@@ -115,6 +116,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
             this.gw = gw
+            updateTxPower = c.updateTxPower
 
         }
         mus.map { it.cu = ce }

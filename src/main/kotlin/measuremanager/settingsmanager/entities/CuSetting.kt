@@ -14,6 +14,7 @@ class CuSetting {
     var codingRate : Long = 0
     var spreadingFactor : Long = 0
     var updateInterval : Long = 0
+    var updateTxPower: Long = 0
 
     @ManyToOne
     lateinit var user: User
