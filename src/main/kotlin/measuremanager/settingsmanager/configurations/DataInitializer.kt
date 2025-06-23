@@ -59,6 +59,7 @@ class DataInitializer(
                 gw = savedGateway
                 this.user = user
                 mus = mutableSetOf()
+                updateTxPower=0
             }
         }
 
