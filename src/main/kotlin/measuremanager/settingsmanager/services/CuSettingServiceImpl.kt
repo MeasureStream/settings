@@ -95,6 +95,7 @@ class   CuSettingServiceImpl(private val cr: CuSettingRepository, private val ur
             codingRate = c.codingRate
             spreadingFactor = c.spreadingFactor
             updateInterval = c.updateInterval
+            updateTxPower = c.updateTxPower //aggiunto ora , per questo mandava sempre 0
         }
         val result  = ce.toDTO()
         mq.sendCommandToCu(result, "update")
