@@ -90,6 +90,38 @@ class DataInitializer(
         // 8. Salvataggi finali
         gr.save(savedGateway)
         ur.save(user)
+
+
+        //casi particolari
+
+        val cusetting = CuSetting().apply {
+            networkId = 50
+            bandwidth = 0
+            codingRate = 0
+            spreadingFactor = 0
+            updateInterval = 0
+            gw = savedGateway
+            this.user = user
+            mus = mutableSetOf()
+            updateTxPower=0
+        }
+
+        cur.save(cusetting)
+
+        val musetting = MuSetting().apply {
+            networkId = 21
+            samplingFrequency = 1000
+            this.user = user
+            this.cu = cusetting
+        }
+        mur.save(musetting)
+
+        savedGateway.cus.add(cusetting)
+        user.cuSettings.add(cusetting)
+        user.muSettings.add(musetting)
+
+        gr.save(savedGateway)
+        ur.save(user)
     }
 
 
