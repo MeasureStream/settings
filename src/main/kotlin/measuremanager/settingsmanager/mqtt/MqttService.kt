@@ -16,29 +16,37 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.convert.ConversionService
 import org.springframework.stereotype.Service
+import javax.net.ssl.SSLSocketFactory
 
 @Service
 class MqttService(
     private val props: MqttProperties,
-    private val ms : MuSettingService,
+    private val ms: MuSettingService,
     private val cs: CuSettingService,
-    private val gs: GatewayService
-   // @Qualifier("conversionService") private val conversionService: ConversionService
+    private val gs: GatewayService,
+    // @Qualifier("conversionService") private val conversionService: ConversionService
 ) {
-
-
     private val client = MqttClient(props.broker, props.clientId)
 
     init {
-        val options = MqttConnectOptions().apply {
-            isCleanSession = true
-            userName = props.username
-            password = this@MqttService.props.password.toCharArray()
-        }
+        val options =
+            MqttConnectOptions().apply {
+                isCleanSession = true
+                userName = props.username
+                password = this@MqttService.props.password.toCharArray()
+                socketFactory = SSLSocketFactory.getDefault()
+            }
 
         client.connect(options)
 
         // Sottoscrizioni
+        val uplinkTopic = "v3/${props.username}/devices/+/up"
+        client.subscribe(uplinkTopic) { topic, message ->
+            val json = message.payload.decodeToString()
+            println("Ricevuto [$topic]: $json")
+        }
+
+        /*
         client.subscribe("uplink/gateway") { topic, message ->
 
             val json = message.payload.decodeToString()
@@ -86,8 +94,7 @@ class MqttService(
                 println("Errore nella deserializzazione del messaggio: ${e.message}")
             }
         }
+         */
     }
-
-
-
 }
+

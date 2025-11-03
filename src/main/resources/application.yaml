@@ -6,8 +6,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
-
-
   security:
     oauth2:
       resourceserver:
@@ -24,10 +22,11 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 mqtt:
-  broker: tcp://mosquitto:1883
+  broker: ssl://eu1.cloud.thethings.network:8883 #tcp://mosquitto:1883
   username: ${MQTT_USERNAME}
   password: ${MQTT_PASSWORD}
   client-id: spring-backend
 
 server:
   port: 8080
+

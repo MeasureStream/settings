@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "measuremanager"
-version = "1.0.1-alpha"
+version = "1.1.1-alpha"
 
 java {
     toolchain {
