@@ -22,11 +22,10 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 mqtt:
-  broker: ssl://eu1.cloud.thethings.network:8883 #tcp://mosquitto:1883
+  broker: ${MQTT_BROKER} #tcp://mosquitto:1883 ssl://eu1.cloud.thethings.network:8883
   username: ${MQTT_USERNAME}
   password: ${MQTT_PASSWORD}
-  client-id: spring-backend
+  client-id: ${MQTT_CLIENT}
 
 server:
   port: 8080
-
