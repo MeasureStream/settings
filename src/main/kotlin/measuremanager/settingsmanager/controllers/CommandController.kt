@@ -1,6 +1,6 @@
 package measuremanager.settingsmanager.controllers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+/*import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import measuremanager.settingsmanager.dtos.CommandDTO
 import measuremanager.settingsmanager.mqtt.MqttPublisherService
 import measuremanager.settingsmanager.mqtt.MqttService
@@ -28,3 +28,4 @@ class CommandController(
         return ms.stop(muid)
     }
 }
+*/
