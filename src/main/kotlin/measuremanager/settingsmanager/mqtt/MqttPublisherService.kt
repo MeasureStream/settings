@@ -9,25 +9,37 @@ import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.springframework.stereotype.Service
+import javax.net.ssl.SSLSocketFactory
 
 @Service
-class MqttPublisherService(private val props: MqttProperties,) :MqttServiceInterface {
-
-    private val client = MqttClient(props.broker, "spring-backend-publisher")
+class MqttPublisherService(private val props: MqttProperties) : MqttServiceInterface {
+    // private val client = MqttClient(props.broker, "spring-backend-publisher")
+    private val client = MqttClient(props.broker, props.clientId)
 
     init {
         // Attiva la riconnessione automatica
-
-        val options = MqttConnectOptions().apply {
+        /*
+        val options = MqttConnectOptions()
+        .apply {
             isCleanSession = false
             userName = props.username
             password = this@MqttPublisherService.props.password.toCharArray()
         }
+        */
+        val options =
+            MqttConnectOptions().apply {
+                isCleanSession = true
+                userName = props.username
+                password = this@MqttPublisherService.props.password.toCharArray()
+                socketFactory = SSLSocketFactory.getDefault()
+            }
 
         client.connect(options)
+
+
         client.setManualAcks(false) // opzionale
         client.setTimeToWait(1000)
-        connectIfNecessary()
+        // connectIfNecessary()
     }
 
     private fun connectIfNecessary() {
