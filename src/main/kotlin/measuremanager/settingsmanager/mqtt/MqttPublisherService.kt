@@ -13,7 +13,7 @@ import javax.net.ssl.SSLSocketFactory
 
 @Service
 class MqttPublisherService(private val props: MqttProperties) : MqttServiceInterface {
-    // private val client = MqttClient(props.broker, "spring-backend-publisher")
+     private val client = MqttClient(props.broker, "spring-backend-publisher")
     /*
     private val client = MqttClient(props.broker, props.clientId)
 
