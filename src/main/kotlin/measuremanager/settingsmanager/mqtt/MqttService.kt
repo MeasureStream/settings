@@ -48,12 +48,18 @@ class MqttService(
                 println("Ricevuto [$topic]: $json")
             }
         } catch (e: Exception) {
-            println("MQTT connection failed on startup: ${e.message}")
+            println("************************************************")
+            println("********** ERROR MQTT CONNECTION **********")
+            println("************************************************")
+            println("Failed to connect to MQTT broker at: ${props.broker}")
+            println("Error message: ${e.message}")
+            println("The application will continue starting, but MQTT functionality will be unavailable.")
+            println("************************************************")
         }
     }
 
-        /*
-        client.subscribe("uplink/gateway") { topic, message ->
+    /*
+    client.subscribe("uplink/gateway") { topic, message ->
 
             val json = message.payload.decodeToString()
             println("Ricevuto [$topic]: $json")
@@ -101,6 +107,5 @@ class MqttService(
             }
         }
          */
-    }
 }
 

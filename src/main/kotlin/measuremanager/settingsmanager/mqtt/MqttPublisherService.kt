@@ -53,11 +53,16 @@ class MqttPublisherService(private val props: MqttProperties) : MqttServiceInter
 
         if (!client.isConnected) {
             try {
-                println("Connessione MQTT a ${props.broker}...")
+                println("Connecting to MQTT broker at ${props.broker}...")
                 client.connect(options)
-                println("MQTT client connesso.")
+                println("MQTT client connected.")
             } catch (e: Exception) {
-                println("Errore nella connessione MQTT: ${e.message}")
+                println("************************************************")
+                println("********** ERROR MQTT CONNECTION **********")
+                println("************************************************")
+                println("Failed to connect to MQTT broker at: ${props.broker}")
+                println("Error message: ${e.message}")
+                println("************************************************")
             }
         }
     }
