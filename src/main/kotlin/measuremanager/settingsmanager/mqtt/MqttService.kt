@@ -29,22 +29,28 @@ class MqttService(
     private val client = MqttClient(props.broker, props.clientId)
 
     init {
-        val options =
-            MqttConnectOptions().apply {
-                isCleanSession = true
-                userName = props.username
-                password = this@MqttService.props.password.toCharArray()
-                socketFactory = SSLSocketFactory.getDefault()
+        try {
+            val options =
+                MqttConnectOptions().apply {
+                    isCleanSession = true
+                    userName = props.username
+                    password = this@MqttService.props.password.toCharArray()
+                    socketFactory = SSLSocketFactory.getDefault()
+                    connectionTimeout = 10
+                }
+
+            client.connect(options)
+
+            // Sottoscrizioni
+            val uplinkTopic = "v3/${props.username}/devices/+/up"
+            client.subscribe(uplinkTopic) { topic, message ->
+                val json = message.payload.decodeToString()
+                println("Ricevuto [$topic]: $json")
             }
-
-        client.connect(options)
-
-        // Sottoscrizioni
-        val uplinkTopic = "v3/${props.username}/devices/+/up"
-        client.subscribe(uplinkTopic) { topic, message ->
-            val json = message.payload.decodeToString()
-            println("Ricevuto [$topic]: $json")
+        } catch (e: Exception) {
+            println("MQTT connection failed on startup: ${e.message}")
         }
+    }
 
         /*
         client.subscribe("uplink/gateway") { topic, message ->
